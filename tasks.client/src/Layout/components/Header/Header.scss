@@ -1,0 +1,21 @@
+.header {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1f2225E6;
+    padding: 3px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.img-logo {
+    max-width: 200%;
+    max-height: 100%;
+    height: auto;
+    background-color: #1f2225E6;
+}
