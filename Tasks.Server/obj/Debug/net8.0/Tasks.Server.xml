@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Tasks.Server</name>
+    </assembly>
+    <members>
+        <member name="T:Tasks.Server.Migrations.AddToDatabase">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddToDatabase.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddToDatabase.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddToDatabase.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Tasks.Server.Migrations.JWT">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.JWT.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.JWT.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.JWT.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Tasks.Server.Migrations.AddUserId">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddUserId.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddUserId.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.AddUserId.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="T:Tasks.Server.Migrations.Update">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.Update.Up(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.Update.Down(Microsoft.EntityFrameworkCore.Migrations.MigrationBuilder)">
+            <inheritdoc />
+        </member>
+        <member name="M:Tasks.Server.Migrations.Update.BuildTargetModel(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>

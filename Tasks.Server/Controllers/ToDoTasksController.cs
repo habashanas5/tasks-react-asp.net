@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tasks.Server.Data;
 using Tasks.Server.Models;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.JsonPatch;
+
 
 namespace Tasks.Server.Controllers
 {
@@ -20,8 +24,42 @@ namespace Tasks.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ToDoTask>>> GetToDoTasks()
         {
-            return await _context.ToDoTasks.ToListAsync();
+            var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub); 
+
+            Console.WriteLine(userId);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var tasks = await _context.ToDoTasks
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+
+            if (tasks == null || !tasks.Any())
+            {
+                return NotFound("You don't have any tasks."); 
+            }
+
+            return tasks;
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<ToDoTask>>> GetToDoTasksByUserId(string userId)
+        {
+            var tasks = await _context.ToDoTasks
+                .Where(t => t.UserId == userId)
+                .ToListAsync();
+
+            if (tasks == null || !tasks.Any())
+            {
+                return NotFound("You don't have any tasks."); 
+            }
+
+            return tasks;
+        }
+
 
         // 2. GET: api/ToDoTask/5
         [HttpGet("{id}")]
@@ -76,6 +114,33 @@ namespace Tasks.Server.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchToDoTask(int id, [FromBody] JsonPatchDocument<ToDoTask> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            var task = await _context.ToDoTasks.FindAsync(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            patchDoc.ApplyTo(task, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
 
         // 5. DELETE: api/ToDoTask/5
         [HttpDelete("{id}")]

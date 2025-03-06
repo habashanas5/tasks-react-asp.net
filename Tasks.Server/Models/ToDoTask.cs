@@ -11,5 +11,6 @@ namespace Tasks.Server.Models
         [Required]
         public string Title { get; set; }
         public bool IsCompleted { get; set; } = false;
+        public string UserId { get; set; }
     }
 }

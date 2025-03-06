@@ -1,14 +1,21 @@
 ﻿/* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MasterLayout from "./Layout/MasterLayout";
+import Login from './Layout/components/Login/Login';
+import Register from './Layout/components/Register/Register';
 import './App.css';
 
 function App() {
     return (
-        <div>
-            <MasterLayout /> 
-        </div>
-    ); 
+        <Router>
+            <Routes>
+                <Route path="/" element={<MasterLayout />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

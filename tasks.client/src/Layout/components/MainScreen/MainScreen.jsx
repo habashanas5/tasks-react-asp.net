@@ -16,11 +16,25 @@ function MainScreen() {
     const [filter, setFilter] = useState('all');
     const inputRef = useRef(null);
 
+    const getAuthHeader = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            };
+        }
+        return {};
+    };
+
     useEffect(() => {
         async function fetchTasks() {
             setIsLoading(true);
             try {
-                const response = await axios.get('https://localhost:7097/api/ToDoTasks/');
+                const userId = localStorage.getItem('userId'); 
+                const response = await axios.get(`https://localhost:7097/api/ToDoTasks/user/${userId}`, {
+                    headers: getAuthHeader(), 
+                });
                 setTasks(response.data);
             } catch (error) {
                 setErrorMessage(error.message);
@@ -28,8 +42,12 @@ function MainScreen() {
                 setIsLoading(false);
             }
         }
-        fetchTasks();
+
+        if (localStorage.getItem('token')) { 
+            fetchTasks();
+        }
     }, []);
+
 
     useEffect(() => {
         if (errorMessage) {
@@ -38,27 +56,31 @@ function MainScreen() {
     }, [errorMessage]);
 
     const handleTaskCompletion = async (taskId, currentStatus) => {
-        // تحديث حالة الـ state مباشرة
-        setTasks(tasks.map(task =>
-            task.id === taskId ? { ...task, isCompleted: !currentStatus } : task
-        ));
-
-        // تحديث الـ status عبر الـ API
         setIsLoading(true);
         try {
-            await axios.patch(`https://localhost:7097/api/ToDoTasks/${taskId}`, [
-                { op: 'replace', path: '/isCompleted', value: !currentStatus },
-            ], {
-                headers: {
-                    'Content-Type': 'application/json-patch+json',
-                },
-            });
+            await axios.patch(
+                `https://localhost:7097/api/ToDoTasks/${taskId}`,
+                [
+                    { op: 'replace', path: '/isCompleted', value: !currentStatus },
+                ],
+                {
+                    headers: {
+                        'Content-Type': 'application/json-patch+json',
+                        ...getAuthHeader(),
+                    },
+                }
+            );
+            setTasks(tasks.map(task =>
+                task.id === taskId ? { ...task, isCompleted: !currentStatus } : task
+            ));
         } catch (error) {
             console.error('Error updating task', error);
+            setErrorMessage('Error updating task status');
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const handleAddTask = async () => {
         if (!newTask.trim()) {
@@ -68,16 +90,22 @@ function MainScreen() {
         }
         setIsLoading(true);
         try {
-            const response = await axios.post('https://localhost:7097/api/ToDoTasks', { title: newTask, isCompleted: false });
+            const response = await axios.post(
+                'https://localhost:7097/api/ToDoTasks',
+                { title: newTask, isCompleted: false, userId: localStorage.getItem('userId') },
+                { headers: getAuthHeader() }
+            );
             setTasks([...tasks, response.data]);
             setNewTask('');
             setErrorMessage('');
         } catch (error) {
+            setErrorMessage('Error adding task');
             console.error('Error adding task', error);
         } finally {
             setIsLoading(false);
         }
     };
+
 
     const handleEditTask = (task) => {
         setIsEditing(true);
@@ -98,7 +126,11 @@ function MainScreen() {
         }
         setIsLoading(true);
         try {
-            await axios.put(`https://localhost:7097/api/ToDoTasks/${currentTaskId}`, { id: currentTaskId, title: newTask, isCompleted: false });
+            await axios.put(
+                `https://localhost:7097/api/ToDoTasks/${currentTaskId}`,
+                { id: currentTaskId, title: newTask, isCompleted: false, userId: localStorage.getItem('userId') }, 
+                { headers: getAuthHeader() }
+            );
             setTasks(tasks.map(task =>
                 task.id === currentTaskId ? { ...task, title: newTask } : task
             ));
@@ -108,6 +140,7 @@ function MainScreen() {
             setErrorMessage('');
         } catch (error) {
             console.error('Error updating task', error);
+            setErrorMessage('Error updating task');
         } finally {
             setIsLoading(false);
         }
@@ -116,7 +149,10 @@ function MainScreen() {
     const handleDeleteTask = async (taskId) => {
         setIsLoading(true);
         try {
-            await axios.delete(`https://localhost:7097/api/ToDoTasks/${taskId}`);
+            await axios.delete(
+                `https://localhost:7097/api/ToDoTasks/${taskId}`,
+                { headers: getAuthHeader() }
+            );
             setTasks(tasks.filter(task => task.id !== taskId));
         } catch (error) {
             console.error('Error deleting task', error);
@@ -186,7 +222,11 @@ function MainScreen() {
                         </div>
                     )}
 
-                    {filteredTasks.length > 0 ? (
+                    {filteredTasks.length === 0 ? (
+                        <div className="no-tasks-message">
+                            <p>{renderNoTasksMessage()}</p>
+                        </div>
+                    ) : (
                         <div className="task-list">
                             {filteredTasks.map(task => (
                                 <div
@@ -206,10 +246,6 @@ function MainScreen() {
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                    ) : (
-                        <div className="no-tasks-message">
-                            <p><i>{renderNoTasksMessage()}</i></p>
                         </div>
                     )}
                 </>
